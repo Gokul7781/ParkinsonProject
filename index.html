@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkinson's Disease Detection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        p {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+        select, input[type="file"] {
+            margin: 15px 0;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #analyzing {
+            display: none;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #3498db;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        #result img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Parkinson's Disease Detection</h1>
+        <p>Select an image to detect whether it indicates Parkinson's Disease.</p>
+        <form id="uploadForm" action="/predict" method="post" enctype="multipart/form-data">
+            <select name="file_type" id="file_type">
+                <option value="spiral">Spiral</option>
+                <option value="wave">Wave</option>
+            </select>
+            <input type="file" name="file" accept="image/*" id="fileInput" required>
+            <button type="submit">Analyze Image</button>
+        </form>
+        <div id="analyzing">Analyzing...</div>
+        <div id="result"></div>
+    </div>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting in the traditional way
+
+            const formData = new FormData(this);
+            const analyzingDiv = document.getElementById('analyzing');
+            const resultDiv = document.getElementById('result');
+
+            analyzingDiv.style.display = 'block'; // Show analyzing state
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                analyzingDiv.style.display = 'none'; // Hide analyzing state
+                resultDiv.innerHTML = data; // Display the result
+            })
+            .catch(error => {
+                analyzingDiv.style.display = 'none'; // Hide analyzing state
+                resultDiv.innerHTML = 'An error occurred. Please try again.';
+            });
+        });
+    </script>
+</body>
+</html>
